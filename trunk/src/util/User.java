@@ -13,10 +13,14 @@ import java.io.Serializable;
  * @author amuliello
  */
 public class User implements Serializable {
-    private int id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int id;
     private String username;
     private String password;
-    private String name;
+	private String name;
     private String surname;
     private String email;
     private String office;
@@ -60,6 +64,10 @@ public class User implements Serializable {
     public String  get_name() {
         return this.name;
     }
+
+    public String getPassword() {
+		return password;
+	}
 
     public String  get_surname() {
         return this.surname;

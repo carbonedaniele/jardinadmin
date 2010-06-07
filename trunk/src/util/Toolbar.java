@@ -8,7 +8,11 @@ import java.io.Serializable;
  */
 
 public class Toolbar implements Serializable {
-    private int id_resultset;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int id_resultset;
     private int id_group;
     private String tools;
 
