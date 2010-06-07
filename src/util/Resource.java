@@ -1,7 +1,5 @@
 package util ;
 
-import java.io.Serializable;
-
 /**
  * Description of resource
  *
@@ -9,7 +7,11 @@ import java.io.Serializable;
  */
 
 public class Resource extends ResourceMinimal {
-    private String type;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String type;
     private String def;
     private int header;
     private int search;

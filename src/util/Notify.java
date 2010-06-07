@@ -11,7 +11,11 @@ import java.io.Serializable;
 
 public class Notify implements Serializable{
 
-    private int id_resultset;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int id_resultset;
     private String notify_name;
     private String address_statement;
     private String data_statement;

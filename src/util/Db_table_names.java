@@ -3,6 +3,10 @@ package util;
 import java.io.Serializable;
 
 public class Db_table_names implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String SYSTEM_PREFIX = "__system_";
 	public static String WRAP = "`";
 	public static String T_RESULTSET = WRAP + SYSTEM_PREFIX + "resultset" + WRAP;

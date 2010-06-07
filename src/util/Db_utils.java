@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 //import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 //include_once 'db_connection.php';
 //include_once 'Db_table_names.php';
@@ -35,8 +36,19 @@ public class Db_utils {
 	public void insert_management_permissions (int group_id,int resource_id) throws  CustomException{
 		insert_management_permissions( group_id, resource_id, 0, 0, 0, 0);
 	}
+
+//	public int insert_All_management_permissions (int group_id) throws  CustomException {
+//		
+//	}
+
+	public void insert_All_management_permissions (int group_id ) throws  CustomException {
+		 ArrayList <ResourceMinimal> resList = get_Allresources();
+		 for (ResourceMinimal resourceMinimal : resList) {
+			 insert_management_permissions (group_id, resourceMinimal.get_id(), 1,1,1,1);
+		}
+	}	
 	
-	public int insert_management_permissions (int group_id,int resource_id,int r ,int w ,int m ,int i ) throws  CustomException {
+	public void insert_management_permissions (int group_id,int resource_id,int r ,int w ,int m ,int i ) throws  CustomException {
 	    Connection  connection = db_get_connection();		
 	    String query = "" +
 	    		" INSERT into " + 
@@ -48,9 +60,8 @@ public class Db_utils {
 	    try {
     		PreparedStatement pstmt = connection.prepareStatement(query);
     		pstmt.executeUpdate();
-    		int insertedKey = pstmt.getGeneratedKeys().getInt(1);
+    		//int insertedKey = pstmt.getGeneratedKeys().getInt(1);
 	    	pstmt.close();
-	    	return insertedKey;		
 	    } catch (Exception e) {
 		      CustomLog.log("Errore durante la insert_management_permissions a database : query --> "+ query, e);
 		      throw new CustomException(
@@ -196,8 +207,7 @@ public class Db_utils {
 		    		")";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query);
-	    		int modifiedRowsNumber = pstmt.executeUpdate();
-		    	pstmt.close();
+	    		pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la insert_management : query --> "+ query, e);
 			      throw new CustomException(
@@ -229,7 +239,7 @@ public class Db_utils {
 		    		" `status`, " +
 		    		" `id_group` )" +
 		    		" VALUES " +
-		    		" (" + username + ", " +
+		    		" ('" + username + "', " +
 		    		" PASSWORD( '" + password + "'), " +
 		    		"'" + addslashes(name) + "', " +
 		    		"'" + addslashes(surname) + "', " +
@@ -241,9 +251,8 @@ public class Db_utils {
 		    		" )" ;
 				    try {
 			    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-						int modifiedRowsNumber = pstmt.executeUpdate();
+						pstmt.executeUpdate();
 					    ResultSet keys = pstmt.getGeneratedKeys();
-				        int count = 0;   
 					    keys.next();
 					    int id = keys.getInt(1);
 						pstmt.close();
@@ -299,7 +308,7 @@ public class Db_utils {
 		        		" id=" + user_id;
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query);
-	    		int modifiedRowsNumber = pstmt.executeUpdate();
+	    		pstmt.executeUpdate();
 		    	pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la insert_management : query --> "+ query, e);
@@ -422,7 +431,7 @@ public class Db_utils {
 		        		" LIMIT 1";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					int modifiedRowsNumber = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 			    	pstmt.close();
 				 } catch (Exception e) {
 				      CustomLog.log("Errore durante la delete_user : query --> "+ query, e);
@@ -431,7 +440,7 @@ public class Db_utils {
 		    }	 
 		}
 		
-		public void insert_group(String name, int status) throws  CustomException  {
+		public int insert_group(String name, int status) throws  CustomException  {
 		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" INSERT into " +
@@ -445,12 +454,12 @@ public class Db_utils {
 		    		" )";	        
 				    try {
 			    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-						int modifiedRowsNumber = pstmt.executeUpdate();
+						pstmt.executeUpdate();
 					    ResultSet keys = pstmt.getGeneratedKeys();
-				        int count = 0;   
 					    keys.next();
 					    int id = keys.getInt(1);
-						pstmt.close();						
+						pstmt.close();	
+						return id;
 					 } catch (Exception e) {
 					      CustomLog.log("Errore durante la insert_group : query --> "+ query, e);
 					      throw new CustomException(
@@ -566,7 +575,7 @@ public class Db_utils {
 		        		" LIMIT 1";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					int modifiedRowsNumber = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 			    	pstmt.close();
 				 } catch (Exception e) {
 				      CustomLog.log("Errore durante la delete_groups : query --> "+ query, e);
@@ -589,7 +598,7 @@ public class Db_utils {
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la insert_grouping : query --> "+ query, e);
@@ -614,7 +623,7 @@ public class Db_utils {
 		    		grouping_id ;
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la edit_grouping : query --> "+ query, e);
@@ -713,7 +722,7 @@ public class Db_utils {
 		        		" LIMIT 1";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					int modifiedRowsNumber = pstmt.executeUpdate();					
+					pstmt.executeUpdate();					
 					pstmt.close();
 				 } catch (Exception e) {
 				      CustomLog.log("Errore durante la delete_plugin : query --> "+ query, e);
@@ -751,7 +760,7 @@ public class Db_utils {
 		    		plugin_id ;
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la edit_plugin : query --> "+ query, e);
@@ -783,7 +792,7 @@ public class Db_utils {
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la insert_plugin : query --> "+ query, e);
@@ -849,7 +858,7 @@ public class Db_utils {
 		        		" LIMIT 1";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					int modifiedRowsNumber = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 			    	pstmt.close();
 				 } catch (Exception e) {
 				      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);
@@ -858,6 +867,46 @@ public class Db_utils {
 			    }	
 		    }
 		}
+
+		public ArrayList<String> getAllTablesList() throws  CustomException  {
+		    Connection connection = db_get_connection();		
+		    String query = "" +
+		    		" SHOW TABLES " ;		
+		    try {
+	    		PreparedStatement pstmt = connection.prepareStatement(query);	    		
+			    ResultSet rs = pstmt.executeQuery();
+			    ArrayList<String> results = new ArrayList<String>();
+		    while(rs.next()) {
+		        String name = rs.getString(1);
+		        if (!name.contains("__system_")) {
+		        	 results.add(name);
+				}
+		    }
+		    pstmt.close();		
+		    return results;
+			 } catch (Exception e) {
+			      CustomLog.log("Errore durante la get_groupings : query --> "+ query, e);
+			      throw new CustomException(
+			          "Errore database");
+		    }	 
+			
+		}
+
+		public void createAllResultSets() throws  CustomException  {
+			ArrayList<String> tablesList = getAllTablesList();
+			for (Iterator<String> iterator = tablesList.iterator(); iterator.hasNext();) {
+				String string = (String) iterator.next();
+				createSimpleResultSet(string );
+				
+			}
+		}
+
+		public void createSimpleResultSet(String tableName ) throws  CustomException  {
+			String name = tableName;
+			String alias = tableName;
+			String statement = "SELECT * FROM " + tableName;
+			createResultSet (name, alias, statement );
+		}		
 
 		public void createResultSet(String resultset_name, String resultset_alias, String resultset_statement ) throws  CustomException  {
 	           /* Esegui query per prendere i campi dal resultset */
@@ -919,7 +968,7 @@ public class Db_utils {
 		        "')";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					int modifiedRowsNumber = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 					pstmt.close();
 				 } catch (Exception e) {
 				      CustomLog.log("Errore durante la insert_field : query --> "+ query, e);
@@ -947,7 +996,7 @@ public class Db_utils {
 		    		id;
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la edit_field : query --> "+ query, e);
@@ -974,7 +1023,7 @@ public class Db_utils {
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la insert_grouping : query --> "+ query, e);
@@ -1014,7 +1063,7 @@ public class Db_utils {
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la insert_notify : query --> "+ query, e);
@@ -1211,7 +1260,7 @@ public class Db_utils {
 		        		" LIMIT 1";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-					int modifiedRowsNumber = pstmt.executeUpdate();					
+					pstmt.executeUpdate();					
 					pstmt.close();
 				 } catch (Exception e) {
 				      CustomLog.log("Errore durante la delete_notify : query --> "+ query, e);
@@ -1220,7 +1269,6 @@ public class Db_utils {
 			    }
 		    }
 		}
-
 		
 		public ArrayList<Resource> get_fields_from_resultsetid(int resultset_id) throws  CustomException  {
 		    Connection connection = db_get_connection();		
@@ -1246,7 +1294,6 @@ public class Db_utils {
 		        String  defaultvalue = rs.getString("defaultvalue");
 		        int default_header = rs.getInt("default_header");		        
 		        int search_grouping = rs.getInt("search_grouping");		        
-		        int id_grouping = rs.getInt("id_grouping");		        
 		        Resource newResource =  new Resource
 		        (id, name, alias,type, defaultvalue ,default_header, search_grouping, search_grouping); 
 		        results.add(newResource);
@@ -1465,17 +1512,48 @@ public class Db_utils {
 			          "Errore database");
 		    }	 
 		}		
-		
-		public ResourceMinimal get_resource_from_id(int resource_id)  throws  CustomException {
+
+
+		public ArrayList<ResourceMinimal> get_Allresources()  throws  CustomException {
 		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" SELECT" +
 		    		" * " +
 		    		" FROM " +
+		    		Db_table_names.T_RESOURCE  ;		
+		    try {
+	    		PreparedStatement pstmt = connection.prepareStatement(query);	    		
+			    ResultSet rs = pstmt.executeQuery();
+			    ArrayList<ResourceMinimal> results = new ArrayList<ResourceMinimal>();
+			    while (rs.next()) {
+			        int id = rs.getInt("id");
+			        String name = rs.getString("name");
+			        String alias = rs.getString("alias");
+			        ResourceMinimal newResource =  new ResourceMinimal(id, name, alias); 
+			        results.add(newResource);			        
+			    }	
+			    pstmt.close(); 
+			    return results;
+			 } catch (Exception e) {
+			      CustomLog.log("Errore durante la get_resource_from_id : query --> "+ query, e);
+			      throw new CustomException(
+			          "Errore database");
+		    }	 
+		}
+		
+		
+		
+		public ResourceMinimal get_resource_from_id(int resource_id)  throws  CustomException {
+		    Connection connection = db_get_connection();
+		    String WHERE_CLAUSE = "";
+		    if(resource_id!=0) 
+		    	WHERE_CLAUSE = " id = " + resource_id + " ";		
+		    String query = "" +
+		    		" SELECT" +
+		    		" * " +
+		    		" FROM " +
 		    		Db_table_names.T_RESOURCE +
-		    		" WHERE " +
-		    		" `id` = " +
-		    		resource_id;		
+		    		WHERE_CLAUSE ;		
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query);	    		
 			    ResultSet rs = pstmt.executeQuery();
@@ -1508,7 +1586,7 @@ public class Db_utils {
 		    		" LIMIT 1";		
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 		    	pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);
@@ -1527,7 +1605,7 @@ public class Db_utils {
 		    		" LIMIT 1";		
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 		    	pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);
@@ -1547,7 +1625,7 @@ public class Db_utils {
 		    		" LIMIT 1";		
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 		    	pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);
@@ -1566,7 +1644,7 @@ public class Db_utils {
 		    		" `id_resultset` = " + resultset_id;		
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 		    	pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);
@@ -1607,7 +1685,7 @@ public class Db_utils {
 		    		WHERE_CLAUSEIDGROUP	;		
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				int modifiedRowsNumber = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 		    	pstmt.close();
 			 } catch (Exception e) {
 			      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);
@@ -1643,7 +1721,7 @@ public class Db_utils {
 		    		resultset_id;
 				    try {
 			    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-						int modifiedRowsNumber = pstmt.executeUpdate();
+						pstmt.executeUpdate();
 				    	pstmt.close();
 					 } catch (Exception e) {
 					      CustomLog.log("Errore durante la delete_grouping : query --> "+ query, e);

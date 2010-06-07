@@ -13,7 +13,11 @@ import java.io.Serializable;
  * @author gpantanetti
  */
 public class Group implements Serializable {
-    private int id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int id;
     private String name;
     private int status;
 

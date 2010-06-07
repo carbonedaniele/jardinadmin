@@ -8,7 +8,11 @@ package util;
  */
 public class Resultset extends ResourceMinimal {
 
-    private String statement;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String statement;
 
     public Resultset (int id, String name, String alias, String statement) {
         super (id, name, alias);
