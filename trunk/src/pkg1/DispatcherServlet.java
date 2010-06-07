@@ -1,9 +1,7 @@
 package pkg1;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
+//import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -57,7 +55,7 @@ public class DispatcherServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
+		//PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
 		doDispatch(request, response, session);
@@ -69,6 +67,8 @@ public class DispatcherServlet extends HttpServlet {
 				doHandleCommitSubmit (request,response, session);
 			} else if (request.getParameter("SubmitResultsetCreation")!=null) {
 				doSubmitResultsetCreation (request,response, session);
+			} else if (request.getParameter("SubmitResultsetCreationAll")!=null) {
+				doSubmitResultsetCreationAll (request,response, session);
 			} else if (request.getParameter("SubmitResultsetModify")!=null) {
 				doSubmitResultsetModify (request,response, session);
 			} else if (request.getParameter("SubmitResultsetModifyDo")!=null) {
@@ -89,6 +89,8 @@ public class DispatcherServlet extends HttpServlet {
 				doSubmitGroupCreation (request,response, session);
 			} else if (request.getParameter("SubmitGroupModify")!=null) {
 				doSubmitGroupModify (request,response, session);
+			} else if (request.getParameter("SubmitGroupAllPrivileges")!=null) {
+				doSubmitGroupAllPrivileges (request,response, session);
 			} else if (request.getParameter("SubmitGroupModifyDo")!=null) {
 				doSubmitGroupModifyDo (request,response, session);
 			} else if (request.getParameter("SubmitGroupDelete")!=null) {
@@ -120,6 +122,21 @@ public class DispatcherServlet extends HttpServlet {
 	}
 
 	
+	private void doSubmitGroupAllPrivileges(HttpServletRequest request,
+			HttpServletResponse response, HttpSession session)throws ServletException, IOException, CustomException, NumberFormatException {
+		 String group_idStr = request.getParameter("modifyGroupSelect");
+		 int group_id = Integer.parseInt(group_idStr);
+		 dbUtils.insert_All_management_permissions(group_id);
+		 refreshIndex(request, response, session);
+
+	}
+
+	private void doSubmitResultsetCreationAll(HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws ServletException,  CustomException {
+		dbUtils.createAllResultSets();
+		doSubmitResultsetCreationAll(request, response, session);
+	}
+
 	private void doSubmitNotifyCreation (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException {
 		 String id_resultset = request.getParameter("resultset_id");
 		 String notify_name = request.getParameter("notify_name");
@@ -147,7 +164,7 @@ public class DispatcherServlet extends HttpServlet {
 	
 	
 	private void doSubmitPluginCreation (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException {
-		 String plugin_id = request.getParameter("plugin_id");
+		 //String plugin_id = request.getParameter("plugin_id");
 		 String plugin_name = request.getParameter("plugin_name");
 		 String plugin_type = request.getParameter("plugin_type");
 		 String plugin_configurationfile = request.getParameter("plugin_configurationfile");
@@ -352,7 +369,14 @@ public class DispatcherServlet extends HttpServlet {
 	private void doSubmitResultsetModify (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException{
 		 String resultset_id = request.getParameter("modifyResultsetSelect");
 		 Resultset resultset = dbUtils.get_resultset( Integer.parseInt(resultset_id));
-		 session.setAttribute("resultset", resultset);
+		 session.setAttribute("selectedResultset", resultset);
+
+		 //String selectedGroupIdStr = request.getParameter("modifyPermissionsGroupSelect");
+		 //int selectedGroupId = Integer.parseInt(selectedGroupIdStr);
+		 int selectedGroupId = 1;
+		 Group selectedGroup = dbUtils.get_group( selectedGroupId);
+		 session.setAttribute("selectedGroup", selectedGroup);
+
 		 response.sendRedirect("manage_resources.jsp");
 	}		
 
@@ -405,7 +429,10 @@ public class DispatcherServlet extends HttpServlet {
 		 response.sendRedirect("msgPage.jsp");
 	}	
 
-	
+	private void refreshIndex(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException {
+		updateSessionData(request, response, session);
+		response.sendRedirect("index.jsp");
+	}
 	
 	
 	private void managePermissions (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException {
