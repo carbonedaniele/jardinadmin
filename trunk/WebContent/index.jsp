@@ -93,6 +93,7 @@ if (  session.getAttribute("db_conn") != null) {
                 statement: <input type="text" name="resultset_statement" />
                 </p>
                 <input type="submit" name="SubmitResultsetCreation" />
+                <input type="submit" name="SubmitResultsetCreationAll"  value="Crea Tutti" />
             </form>
 
            <h2>Amministrazione Resultset/Gruppo</h2>
@@ -229,6 +230,7 @@ if (  session.getAttribute("db_conn") != null) {
                     <% } %>
                 </select>
                 <input type="submit" name="SubmitGroupModify" />
+                <input type="submit" name="SubmitGroupAllPrivileges"  value="assegna tutti i privilegi" />                
             </form>
 
             <h2>Eliminazione Gruppo</h2>
