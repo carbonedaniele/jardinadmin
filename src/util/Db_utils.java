@@ -1748,7 +1748,7 @@ public class Db_utils {
 		    		" WHERE " +
 		    		" (id_resource = " +
 		    		resourceId +
-		    		"rs.id) " +
+		    		") " +
 		    		" AND " +
 		    		"(id_group =" +
 		    		groupId +
