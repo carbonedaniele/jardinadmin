@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jardin Admin Java" basedir=".">
+<property name="warfile" value="jardinAdminJava"/>
+<target name="unpack">
+<unwar src="${warfile}.war" dest="${warfile}" />
+</target>
+<target name="create">
+<war destfile="${warfile}.war" webxml="WebContent/WEB-INF/web.xml" update="true">
+<classes dir="build\classes"/>
+<fileset dir="WebContent">
+</fileset>
+</war>
+</target>
+<target name="copy">
+<copy todir="../" overwrite="true">
+<fileset dir=".">
+<include name="*.war"/>
+</fileset>
+</copy>
+</target>
+<target name="deploy">
+<antcall target="create"/>
+<antcall target="copy"/>
+</target>
+</project>

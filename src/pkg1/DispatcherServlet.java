@@ -3,6 +3,7 @@ package pkg1;
 import java.io.IOException;
 //import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -71,8 +72,8 @@ public class DispatcherServlet extends HttpServlet {
 				doSubmitResultsetCreationAll (request,response, session);
 			} else if (request.getParameter("SubmitResultsetModify")!=null) {
 				doSubmitResultsetModify (request,response, session);
-			} else if (request.getParameter("SubmitResultsetModifyDo")!=null) {
-				doSubmitResultsetModifyDo (request,response, session);
+			} else if (request.getParameter("SubmitPermissionsModifyDo")!=null) {
+				doSubmitPermissionsModify (request,response, session);
 			} else if (request.getParameter("SubmitResultsetModifyChangeGroup")!=null) {
 				doSubmitResultsetModifyChangeGroup(request, response, session) ;
 			} else if (request.getParameter("SubmitResultsetDelete")!=null) {
@@ -378,10 +379,9 @@ public class DispatcherServlet extends HttpServlet {
 		 session.setAttribute("selectedResources", selectedResources);
 		 ArrayList <Pluginassociation> pluginAssociations = dbUtils.get_pluginassociation(selectedResultsetId, selectedGroupId);
 		 session.setAttribute("pluginAssociations", pluginAssociations);		  		 
-		 response.sendRedirect("manage_resources.jsp");	
 		 Toolbar selectedToolbar = dbUtils.get_toolbar_from_ids(selectedResultsetId, selectedGroupId);	 
-		 session.setAttribute("selectedToolbar", selectedToolbar);		  		 
-			 
+		 session.setAttribute("selectedToolbar", selectedToolbar);		  		 			
+		 response.sendRedirect("manage_resources.jsp");	
 	}
 	
 	private void doSubmitResultsetModifyChangeGroup (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException{
@@ -390,25 +390,6 @@ public class DispatcherServlet extends HttpServlet {
 		doSubmitResultsetModifyChangeGroupCommon(request, response, session, selectedGroupId);
 	}		
 	
-	private void doSubmitResultsetModifyDo (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException{
-		 String resultset_name = request.getParameter("resultset_name");
-		 String resultset_alias = request.getParameter("resultset_alias");
-		 Resultset resultset = (Resultset) session.getAttribute("resultset");
-		 int resultset_id = resultset.get_id();
-// 
-		 /*
-		  * 
-		  *  DA RISCRIVERE 
-		  *    
-		  */
-		 
-		 
-	//	 dbUtils.edit_resultset(resultset_id, resultset_name, resultset_alias);
-		 session.removeAttribute("resultset");
-		 this.updateSessionData(request, response, session);
-		 session.setAttribute("printedMsg", "Raggruppamento " + resultset_name + " modificato con successo");
-		 response.sendRedirect("msgPage.jsp");
-	}	
 	
 	private void doSubmitResultsetDelete (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException{
 		 String resultset_id = request.getParameter("deleteResultsetSelect");		
@@ -422,13 +403,108 @@ public class DispatcherServlet extends HttpServlet {
 		updateSessionData(request, response, session);
 		response.sendRedirect("index.jsp");
 	}
+
+	
+//	private void doSubmitResultsetModifyDo (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException{
+//		 String resultset_name = request.getParameter("resultset_name");
+//		 String resultset_alias = request.getParameter("resultset_alias");
+//		 Resultset resultset = (Resultset) session.getAttribute("resultset");
+//		 int resultset_id = resultset.get_id();
+////
+//		 /*
+//		  * 
+//		  *  DA RISCRIVERE 
+//		  *    
+//		  */
+//		 
+//		 
+//	//	 dbUtils.edit_resultset(resultset_id, resultset_name, resultset_alias);
+//		 session.removeAttribute("resultset");
+//		 this.updateSessionData(request, response, session);
+//		 session.setAttribute("printedMsg", "Raggruppamento " + resultset_name + " modificato con successo");
+//		 response.sendRedirect("msgPage.jsp");
+//	}	
 	
 	
-	private void managePermissions (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException {
-		 String group_id = request.getParameter("group_id");
+	private int getSinglePermission (HttpServletRequest request, String paramName) throws ServletException, IOException,  CustomException, NumberFormatException {
+		String paramValue = (String)request.getParameter(paramName);
+		if ( (paramValue!=null) && (paramValue.compareTo("")!=0) ) {
+			return 1;
+		}		
+		return 0;
+	}
+	
+	private void doSubmitPermissionsModify (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException {
+		Group selectedGroup = (Group) session.getAttribute("selectedGroup");
+		Resultset selectedResultset = (Resultset) session.getAttribute("selectedResultset");
+		 //String selectedGroupIdStr = request.getParameter("modifyPermissionsGroupSelect");
+		 int selectedGroupId = selectedGroup.get_id();
+		 
 		 String tools = (request.getParameter("tools")).toUpperCase();
 		 String resultset_id = request.getParameter("resultset_id");
-// 		 String resource_list_UPDATE = array();
+		 Resultset resultset = (Resultset) session.getAttribute("resultset");
+		 Enumeration paramEnumeration = request.getParameterNames();
+		 while (paramEnumeration.hasMoreElements()) {
+			String param_name = (String) paramEnumeration.nextElement();			
+			String paramValue = (String) request.getParameter(param_name);
+			System.out.print(param_name + " --> " + paramValue);
+			if ( param_name.matches( "c_(\\d*)_(\\w+)" ) ){
+				System.out.println(" MATCH OK");
+			} else {
+				System.out.println("");
+			}
+		}
+		 ArrayList <ResourceWithGroupPermissions> selectedResources = (ArrayList <ResourceWithGroupPermissions>) session.getAttribute("selectedResources");
+		 for (ResourceWithGroupPermissions resource : selectedResources) {
+			 String resource_name = resource.get_name();
+			 String resource_alias = resource.get_alias();
+			 int resource_id = resource.get_id();
+			 String resource_type = resource.get_type();
+			 String resource_def = resource.get_def();
+			 int resource_header = resource.get_header();
+			 int resource_search = resource.get_search();
+			 int resource_grouping = resource.get_grouping();		
+			 int readperm = 0;
+			 int deleteperm = 0;
+			 int modifyperm = 0;
+			 int insertperm = 0;
+			 if (resource.getResourceGroupPermissions() != null){
+				 readperm = resource.getResourceGroupPermissions().getRead();
+				 deleteperm = resource.getResourceGroupPermissions().getDelete();
+				 modifyperm = resource.getResourceGroupPermissions().getModify();
+				 insertperm = resource.getResourceGroupPermissions().getInsert();
+				}
+
+			 String resource_aliasNew = (String)request.getParameter("c_" + resource_id + "_a");
+//			 int resource_idNew = Integer.parseInt( (String)request.getParameter(""));
+//			 String resource_typeNew = (String)request.getParameter("");
+//			 String resource_defNew = (String)request.getParameter("");
+			 int resource_headerNew = getSinglePermission(request, "c_" + resource_id + "_h");
+			 int resource_searchNew = getSinglePermission(request,"c_" + resource_id + "_s");
+
+			 int resource_groupingNew = Integer.parseInt((String)request.getParameter("c_" + resource_id + "_g"));		
+
+			 int readpermNew = getSinglePermission(request, "c_" + resource_id + "_r");
+			 int deletepermNew = getSinglePermission(request, "c_" + resource_id + "_w");
+			 int modifypermNew = getSinglePermission(request, "c_" + resource_id + "_m");
+			 int insertpermNew = getSinglePermission(request, "c_" + resource_id + "_i");
+			 
+			 if (
+					 (resource_alias.compareTo(resource_aliasNew)!= 0) ||
+					 (resource_header!=resource_headerNew) ||
+					 (resource_search!=resource_searchNew) ||
+					 (resource_grouping!=resource_groupingNew) ||
+					 (readperm!=readpermNew) ||
+					 (deleteperm!=deletepermNew) ||
+					 (modifyperm!=modifypermNew) ||
+					 (insertperm!=insertpermNew) 
+				){				
+				 dbUtils.remove_management_permission_by_id_resource_id_and_goup_id(0, resource_id, selectedGroupId);
+				 dbUtils.insert_management_permissions(selectedGroupId, resource_id, readpermNew, deletepermNew, modifypermNew, insertpermNew);
+			 } 
+		 }
+		 
+		 // 		 String resource_list_UPDATE = array();
 //		
 //		    for(_REQUEST AS key => value) {
 //		        if (preg_match('/^c_(\d*)_(\w+)/', key, pin)) {
@@ -464,7 +540,6 @@ public class DispatcherServlet extends HttpServlet {
 //		        if(header=="") header = 0;
 //		//        echo "<pre>Inserting id (alias) permissions [rwmi] ... ";
 //		        // cancello eventuali permessi inseriti precedentemente
-//		String connection = db_get_connection();
 //		String query_del = "delete from T_MANAGEMENT where id_resource = id and id_group = group_id";
 //		String risu_del = mysql_query(query_del);
 //		        // modifico l'alias della risorsa
@@ -504,12 +579,31 @@ public class DispatcherServlet extends HttpServlet {
 //		        <pre><b>Permessi e tools vuoti, elimino i record relativi ai permessi</b></pre> 
 //		        <% %>
 //		    }
-
+		 
+		 
+		 //dbUtils.remove_management_permission_by_id_resource_id_and_goup_id(id, resource_id, group_id);
+		 //dbUtils.insert_management_permissions(group_id, resource_id, r, w, m, i);
+		 //session.removeAttribute("resultset");
+		 this.updateSessionData(request, response, session);
+		 this.updateSelectedSessionData(request, response, session);
+		 //session.setAttribute("printedMsg", "Raggruppamento " + resultset_name + " modificato con successo");
+		 response.sendRedirect("manage_resources.jsp");
 	}
 
 	
 	
-	
+	private void updateSelectedSessionData (HttpServletRequest request, HttpServletResponse response, HttpSession session)throws ServletException, IOException, CustomException {
+		Group selectedGroup = (Group) session.getAttribute("selectedGroup");
+		Resultset selectedResultset = (Resultset) session.getAttribute("selectedResultset");
+		 int selectedGroupId = selectedGroup.get_id();
+		 int selectedResultsetId = selectedResultset.get_id();
+	 ArrayList <ResourceWithGroupPermissions> selectedResources = dbUtils.get_fields_with_permissions_from_resultsetid(selectedResultset.get_id());
+	 session.setAttribute("selectedResources", selectedResources);
+	 ArrayList <Pluginassociation> pluginAssociations = dbUtils.get_pluginassociation(selectedResultsetId, selectedGroupId);
+	 session.setAttribute("pluginAssociations", pluginAssociations);		  		 
+	 Toolbar selectedToolbar = dbUtils.get_toolbar_from_ids(selectedResultsetId, selectedGroupId);	 
+	 session.setAttribute("selectedToolbar", selectedToolbar);		  		 
+	}
 	
 	
 	
