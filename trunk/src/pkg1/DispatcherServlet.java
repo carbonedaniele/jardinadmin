@@ -73,7 +73,7 @@ public class DispatcherServlet extends HttpServlet {
 				doSubmitResultsetModify (request,response, session);
 			} else if (request.getParameter("SubmitResultsetModifyDo")!=null) {
 				doSubmitResultsetModifyDo (request,response, session);
-			} else if (request.getParameter("SubmitModifyPermissionResultsetOrGroup")!=null) {
+			} else if (request.getParameter("SubmitResultsetModifyChangeGroup")!=null) {
 				doSubmitResultsetModifyChangeGroup(request, response, session) ;
 			} else if (request.getParameter("SubmitResultsetDelete")!=null) {
 				doSubmitResultsetDelete (request,response, session);
@@ -354,51 +354,40 @@ public class DispatcherServlet extends HttpServlet {
 		 String resultset_name = request.getParameter("resultset_name");
 		 String resultset_alias = request.getParameter("resultset_alias");
 		 String resultset_statement = request.getParameter("resultset_statement");
-	
-		 
 		 dbUtils.createResultSet( resultset_name,  resultset_alias,  resultset_statement);
-
 		 session.setAttribute("printedMsg", "Resultset " + resultset_alias + " inserito con successo");
 		 session.setAttribute("titleMsg", "Risultato: ");
 		 response.sendRedirect("msgPage.jsp");
 	}	
-
-
-	
 	
 	private void doSubmitResultsetModify (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException{
-		 String resultset_id = request.getParameter("modifyResultsetSelect");
-		 Resultset resultset = dbUtils.get_resultset( Integer.parseInt(resultset_id));
-		 session.setAttribute("selectedResultset", resultset);
-
-		 //String selectedGroupIdStr = request.getParameter("modifyPermissionsGroupSelect");
-		 //int selectedGroupId = Integer.parseInt(selectedGroupIdStr);
 		 int selectedGroupId = 1;
-		 Group selectedGroup = dbUtils.get_group( selectedGroupId);
-		 session.setAttribute("selectedGroup", selectedGroup);
-
-		 response.sendRedirect("manage_resources.jsp");
+		 doSubmitResultsetModifyChangeGroupCommon(request, response, session, selectedGroupId);
 	}		
 
-	private void doSubmitResultsetModifyChangeGroup (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException{
-		 String selectedResultsetIdStr = request.getParameter("modifyPermissionsResultsetSelect");
+	private void doSubmitResultsetModifyChangeGroupCommon (HttpServletRequest request, HttpServletResponse response, HttpSession session, int selectedGroupId) throws ServletException, IOException, CustomException, NumberFormatException{
+		 String selectedResultsetIdStr = request.getParameter("modifyResultsetSelect");
 		 int selectedResultsetId = Integer.parseInt(selectedResultsetIdStr);
 		 Resultset selectedResultset = dbUtils.get_resultset(selectedResultsetId);
 		 session.setAttribute("selectedResultset", selectedResultset);
 		 
-		 String selectedGroupIdStr = request.getParameter("modifyPermissionsGroupSelect");
-		 int selectedGroupId = Integer.parseInt(selectedGroupIdStr);
 		 Group selectedGroup = dbUtils.get_group( selectedGroupId);
 		 session.setAttribute("selectedGroup", selectedGroup);
-
 		 
 		 ArrayList <ResourceWithGroupPermissions> selectedResources = dbUtils.get_fields_with_permissions_from_resultsetid(selectedResultset.get_id());
 		 session.setAttribute("selectedResources", selectedResources);
-
 		 ArrayList <Pluginassociation> pluginAssociations = dbUtils.get_pluginassociation(selectedResultsetId, selectedGroupId);
-		 session.setAttribute("pluginAssociations", pluginAssociations);
-		  		 
-		 response.sendRedirect("manage_ressources.jsp");
+		 session.setAttribute("pluginAssociations", pluginAssociations);		  		 
+		 response.sendRedirect("manage_resources.jsp");	
+		 Toolbar selectedToolbar = dbUtils.get_toolbar_from_ids(selectedResultsetId, selectedGroupId);	 
+		 session.setAttribute("selectedToolbar", selectedToolbar);		  		 
+			 
+	}
+	
+	private void doSubmitResultsetModifyChangeGroup (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException{
+		String selectedGroupIdStr = request.getParameter("modifyPermissionsGroupSelect");
+		int selectedGroupId = Integer.parseInt(selectedGroupIdStr);
+		doSubmitResultsetModifyChangeGroupCommon(request, response, session, selectedGroupId);
 	}		
 	
 	private void doSubmitResultsetModifyDo (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException{
