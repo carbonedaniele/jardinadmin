@@ -192,7 +192,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
         </table>
         </form>
         <form action="DispatcherServlet" method="POST" name="Users">
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Submit" name="SubmitPermissionsModifyDo"/>
             <input type=button onclick="checkTutti()" value="Seleziona tutti" />
             <input type=button onclick="uncheckTutti()" value="Deseleziona tutti" />
             <input type=button onclick="setReadOnly()" value="sola lettura" />
@@ -230,10 +230,16 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
 									 int resource_search = resource.get_search();
 									 int resource_grouping = resource.get_grouping();
 								
-										 int readperm = resource.getResourceGroupPermissions().getRead();
-										 int deleteperm = resource.getResourceGroupPermissions().getDelete();
-										 int modifyperm = resource.getResourceGroupPermissions().getModify();
-										 int insertperm = resource.getResourceGroupPermissions().getInsert();
+									 int readperm = 0;
+									 int deleteperm = 0;
+									 int modifyperm = 0;
+									 int insertperm = 0;
+									 if (resource.getResourceGroupPermissions() != null){
+										 readperm = resource.getResourceGroupPermissions().getRead();
+										 deleteperm = resource.getResourceGroupPermissions().getDelete();
+										 modifyperm = resource.getResourceGroupPermissions().getModify();
+										 insertperm = resource.getResourceGroupPermissions().getInsert();
+										}
                     %>
                 <tr>
                     <td><%= resource_name %></td>
@@ -249,7 +255,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                     
                     <td><%
                     if(resource_id != selectedResultset.get_id()) {
-                    	%> <select name="c_{resource_id}_g">
+                    	%> <select name="c_<%= resource_id %>_g" >
                     	<%
                         for ( Grouping grouping : groupings ) {
                             %> <option value=<%= grouping.get_id() %>                            
@@ -272,9 +278,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                     <td colspan="11">&nbsp;</td>
                 </tr>               
             </table>
-<%=
-	"test" 
-	%>
+
              <table>
             <tr>
                     <td colspan="4">Tools (ALL MODIFY EXPORT IMPORT PREFERENCE ANALISYS)
@@ -333,7 +337,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                     </td>
                 </tr>
         </table>
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Submit" name="SubmitPluginsPermissionsModifyDo" />
             <input type=button onclick="checkTutti()" value="Seleziona tutti" />
             <input type=button onclick="uncheckTutti()" value="Deseleziona tutti" />
             <input type=button onclick="setReadOnly()" value="sola lettura" />

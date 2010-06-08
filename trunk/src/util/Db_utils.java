@@ -48,7 +48,7 @@ public class Db_utils {
 		}
 	}	
 	
-	public void insert_management_permissions (int group_id,int resource_id,int r ,int w ,int m ,int i ) throws  CustomException {
+	public void insert_management_permissions (int group_id,int resource_id,int r ,int d ,int m ,int i ) throws  CustomException {
 	    Connection  connection = db_get_connection();		
 	    String query = "" +
 	    		" INSERT into " + 
@@ -56,7 +56,7 @@ public class Db_utils {
 	    		" " + 
 	    		" (`id_group`, `id_resource`, `readperm`, `deleteperm`, `modifyperm`, `insertperm`) " + 
 	    		" VALUES " +
-	    		" (" + group_id + ", " + resource_id + ", " +  r + ", " +  w + ", " + m + ", " +  i + ")";
+	    		" (" + group_id + ", " + resource_id + ", " +  r + ", " +  d + ", " + m + ", " +  i + ")";
 	    try {
     		PreparedStatement pstmt = connection.prepareStatement(query);
     		pstmt.executeUpdate();
