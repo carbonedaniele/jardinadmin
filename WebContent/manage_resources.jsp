@@ -152,12 +152,12 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
 
         %>
 
-        <form action="DispactcherServlet" method="POST" name="Group">
+        <form action="DispatcherServlet" method="POST" name="Group">
             <input type="hidden" name="action" value="old">
             <table>
                 <tr>
                     <td>Seleziona resultset:</td>
-                    <td><select name="modifyPermissionsResultsetSelect" onchange="this.form.submit()">
+                    <td><select name="modifyResultsetSelect" onchange="this.form.submit()">
                 <% for (Resultset resultset : resultsets ) {
 										 int id = resultset.get_id();
 										 String name = resultset.get_alias();
@@ -170,7 +170,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                     </option>
                     <% } %>
             </select></td>
-            <td rowspan="2"><input type="submit" value="aggiorna selezione"></td>
+            <td rowspan="2"><input type="submit" name="SubmitResultsetModifyChangeGroup"   value="aggiorna selezione"></td>
             
                 </tr>
                 <tr>
@@ -270,11 +270,11 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                 %>
                 <tr>
                     <td colspan="11">&nbsp;</td>
-                </tr>
-                
-
+                </tr>               
             </table>
-
+<%=
+	"test" 
+	%>
              <table>
             <tr>
                     <td colspan="4">Tools (ALL MODIFY EXPORT IMPORT PREFERENCE ANALISYS)
