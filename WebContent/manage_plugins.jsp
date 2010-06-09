@@ -38,7 +38,7 @@
                 <br />
                 note: <input type="text" name="plugin_note" value="<%= plugin.get_note() %>" /><br />
 
-            <input type="submit" name="SubmitUserPluginDo" />
+            <input type="submit" name="SubmitPluginModifyDo" />
         </form>
         <p><a href="index.jsp">Torna indietro</a></p>
     </body>

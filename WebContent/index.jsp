@@ -270,7 +270,7 @@ if (  session.getAttribute("db_conn") != null) {
             <h2>Modifica Plugin</h2>
             <form action="DispatcherServlet" method="POST">
                 <input type="hidden" name="action" value="plugin_edit" />
-                <select name="plugin_id">
+                <select name="modifyPluginSelect">
                     <% 
                     ArrayList <Plugin> plugins = (ArrayList <Plugin>) session.getAttribute("plugins");
                     for (Plugin plugin : plugins) {
@@ -280,7 +280,7 @@ if (  session.getAttribute("db_conn") != null) {
 //                        type = plugin.get_type();
 //                        note = plugin.get_note();
                         %>
-                    <option value="<%= id %>"><%= "name" %></option>
+                    <option value="<%= id %>"><%= name %></option>
                     <% } %>
                 </select>
                 <input type="submit" name="SubmitPluginModify" />
@@ -289,7 +289,7 @@ if (  session.getAttribute("db_conn") != null) {
             <h2>Eliminazione Plugin</h2>
             <form name="delete_plugin" action="DispatcherServlet" method="POST" onsubmit="return canc_plugin();">
                 <input type="hidden" name="action" value="plugin_delete" />
-                <select name="plugin_id">
+                <select name="deletePluginSelect">
                     <% for (Plugin plugin : plugins) {
 												 int id = plugin.get_id();
 												 String name = plugin.get_name();
