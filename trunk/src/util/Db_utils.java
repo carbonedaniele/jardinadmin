@@ -71,7 +71,11 @@ public class Db_utils {
 		
 		public String insert_tool(Toolbar toolbar)throws  CustomException {	
 		    Connection connection = db_get_connection();		
-		    String query = " INSERT INTO " + Db_table_names.T_TOOLBAR + " SET `id`='',`id_resultset`='" + 
+		    String query = " INSERT " +
+		    				" INTO " + 
+		    				Db_table_names.T_TOOLBAR + 
+		    				" SET " +
+		    				"`id_resultset`='" + 
 		    				toolbar.get_id_resultset() + 
 		    				"', `id_group`='" + 
 		                	toolbar.get_id_group() + 
@@ -1046,7 +1050,7 @@ public class Db_utils {
 		    		" into " +
 		    		Db_table_names.T_NOTIFY + 
 		    		" " + 
-		    		" (`resultset_id`, `name`, `address_statement`, `data_statement`, `xslt`, `link_id`) " +
+		    		" (`id_resultset`, `name`, `address_statement`, `data_statement`, `xslt`, `link_id`) " +
 		    		" VALUES " +
 		    		"(" +
 		    		resultset_id +
@@ -1204,7 +1208,7 @@ public class Db_utils {
 			    	pstmt.close();		
 			    	return toolbar;
 			    } else {
-			    	Toolbar toolbar = new Toolbar(resultset_id, group_id, null);
+			    	Toolbar toolbar = new Toolbar(resultset_id, group_id, "");
 			    	pstmt.close();		
 			    	return toolbar;
 			    }
@@ -1309,7 +1313,7 @@ public class Db_utils {
 		
 		
 		
-		public ArrayList<ResourceWithGroupPermissions> get_fields_with_permissions_from_resultsetid(int resultset_id) throws  CustomException  {
+		public ArrayList<ResourceWithGroupPermissions> get_fields_with_permissions_from_resultsetid(int resultset_id, int group_id) throws  CustomException  {
 		    Connection connection = db_get_connection();		
 		    String query = "" +
 		    		" SELECT " +
@@ -1320,7 +1324,8 @@ public class Db_utils {
 		    		Db_table_names.T_FIELD +
 		    		" f USING (`id`) " + 
 		    		" WHERE " +
-		    		" f.`id_resultset` = " + resultset_id;
+		    		" f.`id_resultset` = " +
+		    		resultset_id;
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query);	    		
 			    ResultSet rs = pstmt.executeQuery();
@@ -1334,7 +1339,7 @@ public class Db_utils {
 		        int default_header = rs.getInt("default_header");		        
 		        int search_grouping = rs.getInt("search_grouping");		        
 		        int id_grouping = rs.getInt("id_grouping");		        
-		        ResourceGroupPermissions resourceGroupPermissions = getResourceGroupPermissions(id, id_grouping);		        
+		        ResourceGroupPermissions resourceGroupPermissions = getResourceGroupPermissions(id, group_id);		        
 		        ResourceWithGroupPermissions newResourceWithGroupPermissions =  new ResourceWithGroupPermissions
 		        (id, name, alias,type, defaultvalue ,default_header, search_grouping, search_grouping,  resourceGroupPermissions); 
 		        results.add(newResourceWithGroupPermissions);
@@ -1490,6 +1495,8 @@ public class Db_utils {
 //		        i++;
 //		    }
 //		}
+
+		
 		public void updateResourceAlias(int id, String newAlias) throws  CustomException  {
 		    Connection connection = db_get_connection();
 		    String query = "" +

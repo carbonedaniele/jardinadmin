@@ -17,10 +17,6 @@ ArrayList <Plugin> plugins = (ArrayList <Plugin>) session.getAttribute("plugins"
 ArrayList <Grouping> groupings = (ArrayList <Grouping>) session.getAttribute("groupings");
 ArrayList <Notify> notifies = (ArrayList <Notify>) session.getAttribute("notifies");
 ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation>) session.getAttribute("pluginAssociations");
-	
-	
-	
-
 
 //for (Notify notify : notifies)	
 //			 String array_grouping[arr_gr("id")] = arr_gr("alias");
@@ -152,12 +148,12 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
 
         %>
 
-        <form action="DispatcherServlet" method="POST" name="Group">
+        <form action="DispatcherServlet" method="POST" name="GroupAndResultSetChoiceForm">
             <input type="hidden" name="action" value="old">
             <table>
                 <tr>
                     <td>Seleziona resultset:</td>
-                    <td><select name="modifyResultsetSelect" onchange="this.form.submit()">
+                    <td><select name="modifyResultsetSelect" onchange="this.form.SubmitResultsetModifyChangeGroup.click()">
                 <% for (Resultset resultset : resultsets ) {
 										 int id = resultset.get_id();
 										 String name = resultset.get_alias();
@@ -170,12 +166,12 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                     </option>
                     <% } %>
             </select></td>
-            <td rowspan="2"><input type="submit" name="SubmitResultsetModifyChangeGroup"   value="aggiorna selezione"></td>
+            <td rowspan="2"><input type="submit" name="SubmitResultsetModifyChangeGroup"  value="aggiorna selezione"></td>
             
                 </tr>
                 <tr>
                     <td>Seleziona gruppo:</td>
-                    <td><select name="modifyPermissionsGroupSelect" onchange="this.form.submit()">
+                    <td><select name="modifyPermissionsGroupSelect" onchange="this.form.SubmitResultsetModifyChangeGroup.click()">
                 <% for (Group group : groups  ) {
 										 int id = group.get_id();
 										 String name = group.get_name();
@@ -203,7 +199,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
             <input type=button onclick="setSearchOnly()" value="sola ricerca" />
                    <table>
                 <tr>
-                    <td colspan="11">Gruppo: <b><%= selectedGroup.get_name() %></b></td>
+                    <td colspan="11"> ResultSet: <b><%= selectedResultset.get_name() %></b>  -->   Gruppo: <b><%= selectedGroup.get_name() %></b></td>
                 </tr>
                 <tr class="title">
                     <td>name</td>
@@ -337,7 +333,7 @@ ArrayList <Pluginassociation> pluginAssociations = (ArrayList <Pluginassociation
                     </td>
                 </tr>
         </table>
-            <input type="submit" value="Submit" name="SubmitPluginsPermissionsModifyDo" />
+            <input type="submit" value="Submit" name="SubmitPermissionsModifyDo" />
             <input type=button onclick="checkTutti()" value="Seleziona tutti" />
             <input type=button onclick="uncheckTutti()" value="Deseleziona tutti" />
             <input type=button onclick="setReadOnly()" value="sola lettura" />
