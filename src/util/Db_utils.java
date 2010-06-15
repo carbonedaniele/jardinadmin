@@ -1232,7 +1232,7 @@ public class Db_utils {
 			    ResultSet rs = pstmt.executeQuery();
 			    ArrayList<Notify> results = new ArrayList<Notify>();
 			    while(rs.next()) {
-			        int id_resultset = rs.getInt("resultset_id");			        
+			        int id_resultset = rs.getInt("id_resultset");			        
 			        int id_notify = rs.getInt("id");			        
 			        String notify_name = rs.getString("name");			        
 			        String address_statement = rs.getString("address_statement");
