@@ -26,7 +26,7 @@ public class DispatcherServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
        
-    /**
+    /**ripro
      * @see HttpServlet#HttpServlet()
      */
     public DispatcherServlet() {
@@ -79,6 +79,8 @@ public class DispatcherServlet extends HttpServlet {
 				doSubmitResultsetModifyChangeGroup(request, response, session) ;
 			} else if (request.getParameter("SubmitResultsetDelete")!=null) {
 				doSubmitResultsetDelete (request,response, session);
+			} else if (request.getParameter("SubmitResultsetDeleteAll")!=null) {
+				doSubmitResultsetDeleteAll (request,response, session);
 			} else if (request.getParameter("SubmitUserCreation")!=null) {
 				doSubmitUserCreation (request,response, session);
 			} else if (request.getParameter("SubmitUserModify")!=null) {
@@ -127,6 +129,14 @@ public class DispatcherServlet extends HttpServlet {
 		}
 	}
 	
+	private void doSubmitResultsetDeleteAll(HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws ServletException, CustomException, IOException {
+		dbUtils.delete_All_resultset();
+		session.setAttribute("printedMsg", "Cancellati Tutti i ResultSet " );
+		session.setAttribute("titleMsg", "Risultato: ");
+		response.sendRedirect("msgPage.jsp");
+	}
+
 	private void doSubmitGroupAllPrivileges(HttpServletRequest request,
 			HttpServletResponse response, HttpSession session)throws ServletException, IOException, CustomException, NumberFormatException {
 		 String group_idStr = request.getParameter("modifyGroupSelect");
@@ -136,9 +146,11 @@ public class DispatcherServlet extends HttpServlet {
 	}
 
 	private void doSubmitResultsetCreationAll(HttpServletRequest request,
-			HttpServletResponse response, HttpSession session) throws ServletException,  CustomException {
-		dbUtils.createAllResultSets();
-		doSubmitResultsetCreationAll(request, response, session);
+			HttpServletResponse response, HttpSession session) throws ServletException,  CustomException, IOException{
+		dbUtils.insertAllResultSets();
+		session.setAttribute("printedMsg", "Creati Tutti i ResultSet " );
+		session.setAttribute("titleMsg", "Risultato: ");
+		response.sendRedirect("msgPage.jsp");
 	}
 
 	private void doSubmitNotifyCreation (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, CustomException, NumberFormatException {
@@ -193,7 +205,7 @@ public class DispatcherServlet extends HttpServlet {
 		 String plugin_type = request.getParameter("plugin_type");
 		 String plugin_configurationfile = request.getParameter("plugin_configurationfile");
 		 String plugin_note = request.getParameter("plugin_note");
-		 dbUtils.edit_plugin(plugin_id, plugin_name, plugin_configurationfile, plugin_type, plugin_note);
+		 dbUtils.modify_plugin(plugin_id, plugin_name, plugin_configurationfile, plugin_type, plugin_note);
 		 session.removeAttribute("plugin");
 		 this.updateSessionData(request, response, session);
 		 session.setAttribute("printedMsg", "Plugin " + plugin_name + " modificato con successo");
@@ -250,7 +262,7 @@ public class DispatcherServlet extends HttpServlet {
 		 String user_telephone = request.getParameter("user_telephone");
 		 String user_status = request.getParameter("user_status");
 		 String user_id_group = request.getParameter("user_id_group");
-		 dbUtils.edit_user(user_id, user_username, user_name, user_surname,
+		 dbUtils.modify_user(user_id, user_username, user_name, user_surname,
 				  user_email, user_office, user_telephone, 
 				  Integer.parseInt(user_status), Integer.parseInt(user_id_group), 
 				  user_password);
@@ -291,7 +303,7 @@ public class DispatcherServlet extends HttpServlet {
 		 String group_name = request.getParameter("group_name");
 		 int group_status = Integer.parseInt(request.getParameter("group_status"));
 		 int group_old_status = group.get_status();
-		 dbUtils.edit_group(group_id, group_name, group_status, group_old_status);
+		 dbUtils.modify_group(group_id, group_name, group_status, group_old_status);
 		 session.removeAttribute("group");
 		 this.updateSessionData(request, response, session);
 		 session.setAttribute("printedMsg", "Gruppo " + group_name + " modificato con successo");
@@ -329,7 +341,7 @@ public class DispatcherServlet extends HttpServlet {
 		 String grouping_alias = request.getParameter("grouping_alias");
 		 Grouping grouping = (Grouping) session.getAttribute("grouping");
 		 int grouping_id = grouping.get_id();
-		 dbUtils.edit_grouping(grouping_id, grouping_name, grouping_alias);
+		 dbUtils.modify_grouping(grouping_id, grouping_name, grouping_alias);
 		 session.removeAttribute("grouping");
 		 this.updateSessionData(request, response, session);
 		 session.setAttribute("printedMsg", "Raggruppamento " + grouping_name + " modificato con successo");
@@ -350,7 +362,7 @@ public class DispatcherServlet extends HttpServlet {
 		 String resultset_name = request.getParameter("resultset_name");
 		 String resultset_alias = request.getParameter("resultset_alias");
 		 String resultset_statement = request.getParameter("resultset_statement");
-		 dbUtils.createResultSet( resultset_name,  resultset_alias,  resultset_statement);
+		 dbUtils.insertResultSet( resultset_name,  resultset_alias,  resultset_statement);
 		 session.setAttribute("printedMsg", "Resultset " + resultset_alias + " inserito con successo");
 		 session.setAttribute("titleMsg", "Risultato: ");
 		 response.sendRedirect("msgPage.jsp");
@@ -389,7 +401,7 @@ public class DispatcherServlet extends HttpServlet {
 	private void doSubmitResultsetDelete (HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException,  CustomException, NumberFormatException{
 		 String resultset_id = request.getParameter("deleteResultsetSelect");		
 		 Resultset resultset = dbUtils.get_resultset( Integer.parseInt(resultset_id));
-		 dbUtils.remove_resultset_complete_by_id(Integer.parseInt(resultset_id));	
+		 dbUtils.delete_resultset_complete_by_id(Integer.parseInt(resultset_id));	
 		 session.setAttribute("printedMsg", "ResultSet " + resultset.get_alias() + " cancellato con successo");
 		 response.sendRedirect("msgPage.jsp");
 	}	
@@ -485,23 +497,23 @@ public class DispatcherServlet extends HttpServlet {
 				noPermissions = false;
 			}
 			 if (resource_alias.compareTo(resource_aliasNew)!= 0) {				
-				 dbUtils.updateResourceAlias(resource_id, resource_aliasNew);
+				 dbUtils.modifyResourceAlias(resource_id, resource_aliasNew);
 			 }
 			 if (	 (readperm!=readpermNew) ||
 					 (deleteperm!=deletepermNew) ||
 					 (modifyperm!=modifypermNew) ||
 					 (insertperm!=insertpermNew) ){						 
-				 dbUtils.remove_management_permission_by_id_resource_id_and_goup_id(0, resource_id, selectedGroupId);
+				 dbUtils.delete_management_permission_by_id_resource_id_and_goup_id(0, resource_id, selectedGroupId);
 				 dbUtils.insert_management_permissions(selectedGroupId, resource_id, readpermNew, deletepermNew, modifypermNew, insertpermNew);
 			 } 
 			 
 			if ( (resource_header!=resource_headerNew) ||
 				 (resource_search!=resource_searchNew) ||
 				 (resource_grouping!=resource_groupingNew) ){
-				 dbUtils.edit_field(resource_id, resource_headerNew, resource_searchNew, resource_groupingNew);
+				 dbUtils.modify_field(resource_id, resource_headerNew, resource_searchNew, resource_groupingNew);
 			 } 
 			if( noPermissions ){
-				dbUtils.remove_management_permission_by_id_resource_id_and_goup_id(0,resource_id,selectedGroupId);
+				dbUtils.delete_management_permission_by_id_resource_id_and_goup_id(0,resource_id,selectedGroupId);
 			}
 		 }
 		String tools = (request.getParameter("tools")).toUpperCase().trim();

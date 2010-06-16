@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLData;
 import java.sql.Statement;
 //import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -268,7 +269,7 @@ public class Db_utils {
 				    }	 			
 		}
 
-		public void edit_user ( int user_id,
+		public void modify_user ( int user_id,
 				String username,
 				String name,
 				String surname,
@@ -277,10 +278,10 @@ public class Db_utils {
 				String telephone,
 				int status,
 				int id_group) throws  CustomException  {
-			 edit_user( user_id, username, name, surname, email, office, telephone, status, id_group, ""); 
+			 modify_user( user_id, username, name, surname, email, office, telephone, status, id_group, ""); 
 		}		
 
-			public void edit_user(int user_id,
+			public void modify_user(int user_id,
 				String username,
 				String name,
 				String surname,
@@ -471,7 +472,7 @@ public class Db_utils {
 				    }	 
 		}
 		
-		public void edit_group(int group_id,
+		public void modify_group(int group_id,
 				String name,
 				int status,
 				int old_status )  throws  CustomException  {
@@ -611,7 +612,7 @@ public class Db_utils {
 		    }	 			
 		}
 		
-		public void edit_grouping(int grouping_id, String name, String alias ) throws  CustomException  {
+		public void modify_grouping(int grouping_id, String name, String alias ) throws  CustomException  {
 		    Connection connection = db_get_connection();		
 		    String query = "" +
 		    		" UPDATE " +
@@ -736,7 +737,7 @@ public class Db_utils {
 		    }
 		}
 		
-		public void edit_plugin(
+		public void modify_plugin(
 				int plugin_id,
 				String name,
 				String  configurationfile,
@@ -896,25 +897,25 @@ public class Db_utils {
 			
 		}
 
-		public void createAllResultSets() throws  CustomException  {
+		public void insertAllResultSets() throws  CustomException  {
 			ArrayList<String> tablesList = getAllTablesList();
 			for (Iterator<String> iterator = tablesList.iterator(); iterator.hasNext();) {
 				String string = (String) iterator.next();
-				createSimpleResultSet(string );
+				insertSimpleResultSet(string );
 				
 			}
 		}
 
-		public void createSimpleResultSet(String tableName ) throws  CustomException  {
+		public void insertSimpleResultSet(String tableName ) throws  CustomException  {
 			String name = tableName;
 			String alias = tableName;
 			String statement = "SELECT * FROM " + tableName;
-			createResultSet (name, alias, statement );
+			insertResultSet (name, alias, statement );
 		}		
 
-		public void createResultSet(String resultset_name, String resultset_alias, String resultset_statement ) throws  CustomException  {
+		public void insertResultSet(String resultset_name, String resultset_alias, String resultset_statement ) throws  CustomException  {
 	           /* Esegui query per prendere i campi dal resultset */
-			 ArrayList<ResourceMinimal> resourcesArray = get_fields_from_query(resultset_statement);
+			 ArrayList<ResourceField> resourcesArray = get_fields_from_query(resultset_statement);
 //		           resource_fields = get_fields_from_query(resultset_name);
 		
 		           /* Inserisci il resultset in resources e prendine l'id */
@@ -928,7 +929,7 @@ public class Db_utils {
 
 	           /* Inserisci nella tabella resource
 	            * e field tutte le risorse con alias = name */
-	           for (ResourceMinimal resource_field : resourcesArray ) {
+	           for (ResourceField resource_field : resourcesArray ) {
 				 String resource_name = resource_field.get_name();
 	/*
 	 * 
@@ -936,12 +937,13 @@ public class Db_utils {
 	 * DA RISOLVERE
 	 * 
 	 */
-				 String resource_type = "DUMMY-TYPE";
+				 String resource_type = resource_field.getJavaSqlType();
+				 // String resource_type = "DUMMY-TYPE";
 				 String resource_def  = "DUMMY-DEF";
 				 
 //				 String resource_type = resource_field.get_type();
 //				 String resource_def  = resource_field.get_def();
-				 int resource_id   = insert_resource(resource_name, resource_name);
+				 int resource_id   = insert_resource (resource_name, resource_name);
 				 insert_field(resource_id, resultset_id, resource_type, resource_def);		 
 				 //String resultset_name = request.getParameter("resultset_name");
 	           }
@@ -952,7 +954,7 @@ public class Db_utils {
 		}
 		
 		public void insert_field(int id, int resultset_id, String type, String def) throws  CustomException  {
-		    Connection connection = db_get_connection();		
+		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" INSERT " +
 		    		" into " +
@@ -981,7 +983,7 @@ public class Db_utils {
 			    }	 			
 		}
 		
-		public void edit_field(int id, int default_header, int search_grouping, int id_grouping) throws  CustomException  {
+		public void modify_field(int id, int default_header, int search_grouping, int id_grouping) throws  CustomException  {
 		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" UPDATE " +
@@ -1390,10 +1392,10 @@ public class Db_utils {
 		    }	 
 		}				
 		
-		public ArrayList<ResourceMinimal> get_fields_from_query(String query) throws  CustomException  {
+		public ArrayList<ResourceField> get_fields_from_query(String query) throws  CustomException  {
 		    Connection connection = db_get_connection();
 		    try {
-			    ArrayList<ResourceMinimal> results = new ArrayList<ResourceMinimal>();
+			    ArrayList<ResourceField> results = new ArrayList<ResourceField>();
 	    		PreparedStatement pstmt = connection.prepareStatement(query  +  " LIMIT 0,1");	    		
 			    ResultSet rs = pstmt.executeQuery();
 		        ResultSetMetaData metaData = rs.getMetaData();
@@ -1402,7 +1404,7 @@ public class Db_utils {
 //		            System.out.println("Field  \tsize\tDataType");
 	            for (int i = 0; i < rowCount; i++) {
 	                String name = metaData.getColumnName(i + 1) ;
-	                String type = metaData.getColumnTypeName(i + 1) ;
+	                String type = metaData.getColumnTypeName(i + 1) ;	                
 //	            	System.out.print(metaData.getColumnName(i + 1) + "  \t");
 //	                System.out.print(metaData.getColumnDisplaySize(i + 1) + "\t");
 //	                System.out.println(metaData.getColumnTypeName(i + 1));
@@ -1413,7 +1415,7 @@ public class Db_utils {
 	                 * 
 	                 */
 	                
-	                ResourceMinimal newResource =  new ResourceMinimal(0, name, type ); 
+	                ResourceField newResource =  new ResourceField (0, name, name, type ); 
 			        results.add(newResource);
 	            }
 		    pstmt.close();		
@@ -1497,7 +1499,7 @@ public class Db_utils {
 //		}
 
 		
-		public void updateResourceAlias(int id, String newAlias) throws  CustomException  {
+		public void modifyResourceAlias(int id, String newAlias) throws  CustomException  {
 		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" UPDATE " +
@@ -1568,6 +1570,7 @@ public class Db_utils {
 		        int id = rs.getInt("id");
 		        String name = rs.getString("name");
 		        String alias = rs.getString("alias");
+		        int type = rs.getInt("type");
 		        ResourceMinimal newResource =  new ResourceMinimal(id, name, alias); 
 			    pstmt.close();		
 		        return newResource;
@@ -1582,7 +1585,7 @@ public class Db_utils {
 		}
 		
 
-		public void remove_only_resultset_by_id(int resultset_id) throws  CustomException  {
+		public void delete_only_resultset_by_id(int resultset_id) throws  CustomException  {
 		    Connection connection = db_get_connection();		
 		    String query = "" +
 		    		" DELETE " +
@@ -1602,7 +1605,7 @@ public class Db_utils {
 		    }	 
 		}
 		
-		public void remove_notify_by_id(int id)  throws  CustomException {
+		public void delete_notify_by_id(int id)  throws  CustomException {
 		    Connection connection = db_get_connection();		
 		    String query = "" +
 		    		" DELETE " +
@@ -1621,7 +1624,7 @@ public class Db_utils {
 		    }	 
 		}	
 		
-		public void remove_resource_by_id(int resource_id) throws  CustomException  {
+		public void delete_resource_by_id(int resource_id) throws  CustomException  {
 		    Connection connection = db_get_connection();		
 		    String query = "" +
 		    		" DELETE " +
@@ -1641,7 +1644,7 @@ public class Db_utils {
 		    }	 
 		}
 		
-		public void remove_fields_by_resultset_id(int resultset_id)  throws  CustomException {
+		public void delete_fields_by_resultset_id(int resultset_id)  throws  CustomException {
 		    Connection connection = db_get_connection();		
 		    String query = "" +
 		    		" DELETE" +
@@ -1660,15 +1663,15 @@ public class Db_utils {
 		    }	 
 		}
 
-		public void remove_management_permission_by_resource_id(int resource_id) throws  CustomException  {
-			remove_management_permission_by_id_resource_id_and_goup_id(0, resource_id, 0);
+		public void delete_management_permission_by_resource_id(int resource_id) throws  CustomException  {
+			delete_management_permission_by_id_resource_id_and_goup_id(0, resource_id, 0);
 		}		
 		
-		public void remove_management_permission_by_id(int id) throws  CustomException  {
-			remove_management_permission_by_id_resource_id_and_goup_id(id,0,0);
+		public void delete_management_permission_by_id(int id) throws  CustomException  {
+			delete_management_permission_by_id_resource_id_and_goup_id(id,0,0);
 		}
 		
-		public void remove_management_permission_by_id_resource_id_and_goup_id(int id, int resource_id, int group_id) throws  CustomException  {
+		public void delete_management_permission_by_id_resource_id_and_goup_id(int id, int resource_id, int group_id) throws  CustomException  {
 		    Connection connection = db_get_connection();		
 		    String WHERE_CLAUSEID = " ";
 		    if(id!=0) {
@@ -1701,23 +1704,23 @@ public class Db_utils {
 		    }	 
 		}
 		
-		public void remove_resources_of_resultset_by_resultset_id(int resultset_id) throws  CustomException  {
+		public void delete_resources_of_resultset_by_resultset_id(int resultset_id) throws  CustomException  {
 		    ArrayList<Resource> resource_list = get_fields_from_resultsetid(resultset_id);		
 		    for ( Resource resource : resource_list ) {
-		        remove_resource_by_id(resource.get_id());
+		        delete_resource_by_id(resource.get_id());
 		    }		
 		            /* Il resultset _deve_ essere eliminato per ultimo */
-		    remove_resource_by_id(resultset_id);
+		    delete_resource_by_id(resultset_id);
 		}
 		
-		public void remove_management_permissions_by_resultset_id(int resultset_id) throws  CustomException  {
+		public void delete_management_permissions_by_resultset_id(int resultset_id) throws  CustomException  {
 			ArrayList<Resource> resource_list = get_fields_from_resultsetid(resultset_id);
 		    for (Resource resource : resource_list) {
-		        remove_management_permission_by_resource_id(resource.get_id());
+		        delete_management_permission_by_resource_id(resource.get_id());
 		    }
 		}
 		
-		public void remove_toolbar_by_resultset_id(int resultset_id)  throws  CustomException {
+		public void delete_toolbar_by_resultset_id(int resultset_id)  throws  CustomException {
 		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" DELETE " +
@@ -1736,12 +1739,19 @@ public class Db_utils {
 				    }	 
 		}
 		
-		public void remove_resultset_complete_by_id(int resultset_id) throws  CustomException  {
-		    remove_management_permissions_by_resultset_id (resultset_id);
-		    remove_resources_of_resultset_by_resultset_id(resultset_id); //prima dei fields
-		    remove_fields_by_resultset_id(resultset_id);
+		public void delete_All_resultset() throws  CustomException  {
+			ArrayList <Resultset> resList = get_resultsets();
+			for (Resultset resultset : resList) {
+				delete_resultset_complete_by_id (resultset.get_id());
+			}
+		}		
+
+		public void delete_resultset_complete_by_id(int resultset_id) throws  CustomException  {
+		    delete_management_permissions_by_resultset_id (resultset_id);
+		    delete_resources_of_resultset_by_resultset_id(resultset_id); //prima dei fields
+		    delete_fields_by_resultset_id(resultset_id);
 		    //remove_toolbar_by_resultset_id(resultset_id);
-		    remove_only_resultset_by_id(resultset_id);
+		    delete_only_resultset_by_id(resultset_id);
 		}
 
 		
