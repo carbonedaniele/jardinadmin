@@ -46,7 +46,12 @@ public class Db_utils {
 		 ArrayList <ResourceMinimal> resList = get_Allresources();
 		 for (ResourceMinimal resourceMinimal : resList) {
 			 insert_management_permissions (group_id, resourceMinimal.get_id(), 1,1,1,1);
-		}
+		 }
+		ArrayList <Resultset> resultSetList = get_resultsets();
+			for (Resultset resultset : resultSetList) {
+				 Toolbar newToolbar = new Toolbar(resultset.get_id(), group_id, "ALL");
+				 insert_tool (newToolbar);				
+			}
 	}	
 	
 	public void insert_management_permissions (int group_id,int resource_id,int r ,int d ,int m ,int i ) throws  CustomException {
