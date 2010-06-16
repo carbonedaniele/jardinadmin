@@ -39,7 +39,7 @@ if (  session.getAttribute("db_conn") != null) {
                 });
 
             });
-
+							 resultSet
             function canc_user() {
                 // conferma la richiesta di cancellazione di un utente
                 conf = window.confirm('Confermi la cancellazione di questo utente? L\'operazione non può essere annullata');
@@ -63,6 +63,13 @@ if (  session.getAttribute("db_conn") != null) {
                 conf = window.confirm('Confermi la cancellazione di questo plugin? L\'operazione non può essere annullata');
                 if(conf) return true;
             }
+
+            function canc_resultSet() {
+                // conferma la richiesta di cancellazione di tutti i result Set
+                conf = window.confirm('Confermi la cancellazione di uno o tutti i ResultSet? L\'operazione non può essere annullata');
+                if(conf) return true;
+            }
+            
         </script>
     </head>
     <body>
@@ -116,7 +123,7 @@ if (  session.getAttribute("db_conn") != null) {
             </form>
 
             <h2>Eliminazione Resultset</h2>
-            <form action="DispatcherServlet" method="POST">
+            <form action="DispatcherServlet" method="POST" onsubmit="return canc_resultSet();" >
                 <input type="hidden" name="action" value="delete" />
                 <select name="deleteResultsetSelect">
                     <% for (Resultset resultset : resultsets) {
@@ -129,6 +136,7 @@ if (  session.getAttribute("db_conn") != null) {
                     <% } %>
                 </select>
                 <input type="submit" name="SubmitResultsetDelete" />
+                <input type="submit" name="SubmitResultsetDeleteAll"  value="Elimina TUTTI I RESULT SET"  />
             </form>
         </div>
 
