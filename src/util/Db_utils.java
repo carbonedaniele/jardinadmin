@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLData;
 import java.sql.Statement;
 //import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -30,7 +29,11 @@ public class Db_utils {
 	}
 	
 	public void createConnection (String mysql_host, String mysql_database , String mysql_user, String mysql_password) throws CustomException {
-		dbManager.createConnection(mysql_host, mysql_database, mysql_user, mysql_password) ;
+		dbManager.createConnection(
+				addSlashes(mysql_host), 
+				addSlashes(mysql_database), 
+				addSlashes(mysql_user), 
+				addSlashes(mysql_password)   ) ;
 	}
 	
 	
@@ -183,7 +186,7 @@ public class Db_utils {
 		        		group_id + 
 		        		", " +
 		        		"'" +
-		        		tools +
+		        		addSlashes(tools) +
 		        		"'" +
 		        		") ";		
 			    try {
@@ -249,13 +252,14 @@ public class Db_utils {
 		    		" `status`, " +
 		    		" `id_group` )" +
 		    		" VALUES " +
-		    		" ('" + username + "', " +
+		    		" (" +
+		    		"'" + addSlashes(username) + "', " +
 		    		" PASSWORD( '" + password + "'), " +
-		    		"'" + addslashes(name) + "', " +
-		    		"'" + addslashes(surname) + "', " +
-		    		"'" + addslashes(email) + "', " +
-		    		"'" + addslashes(office) + "', " +
-		    		"'" + telephone + "', " +
+		    		"'" + addSlashes(name) + "', " +
+		    		"'" + addSlashes(surname) + "', " +
+		    		"'" + addSlashes(email) + "', " +
+		    		"'" + addSlashes(office) + "', " +
+		    		"'" + addSlashes(telephone) + "', " +
 		    		status + ", " + 
 		    		id_group +
 		    		" )" ;
@@ -283,7 +287,16 @@ public class Db_utils {
 				String telephone,
 				int status,
 				int id_group) throws  CustomException  {
-			 modify_user( user_id, username, name, surname, email, office, telephone, status, id_group, ""); 
+			 modify_user( user_id, 
+					addSlashes(username), 
+					addSlashes(name), 
+					addSlashes(surname), 
+					addSlashes(email), 
+					addSlashes(office), 
+					addSlashes( telephone), 
+					 status, 
+					 id_group, 
+					 ""); 
 		}		
 
 			public void modify_user(int user_id,
@@ -301,17 +314,17 @@ public class Db_utils {
 		        		" UPDATE " + 
 		        		Db_table_names.T_USER + 
 		        		" SET " +
-		        		" `username`= '" + username  + "', " ;
+		        		" `username`= '" + addSlashes(username)  + "', " ;
 			    if(password!="") {
 			    	query += 
-			    		" `password`= PASSWORD('" + password + "'), " ;
+			    		" `password`= PASSWORD('" + addSlashes(password) + "'), " ;
 			    }
 			    	query +=
-			    		" `name`= '" + name + "', " +
-		        		" `surname`= '" + surname + "', " +
-		        		" `email`= '" + email + "', " +
-		        		" `office`= '" + office + "', " +
-		        		" `telephone`='" + telephone + "', " +
+			    		" `name`= '" + addSlashes(name) + "', " +
+		        		" `surname`= '" + addSlashes(surname) + "', " +
+		        		" `email`= '" + addSlashes(email) + "', " +
+		        		" `office`= '" + addSlashes(office) + "', " +
+		        		" `telephone`='" + addSlashes(telephone) + "', " +
 		        		" `status`= " + status + ", " +
 		        		" `id_group`= '" + id_group + "' " +
 		        		" WHERE " +
@@ -458,7 +471,7 @@ public class Db_utils {
 		    		" (`name`, `status`) " +
 		    		" VALUES " +
 		    		" ('" +
-		    		name +
+		    		addSlashes(name) +
 		    		"', " +
 		    		status +
 		    		" )";	        
@@ -602,9 +615,9 @@ public class Db_utils {
 		    		" (`name`, `alias`)" +
 		    		" VALUES " +
 		    		" ('" +
-		    		addslashes(name) +
+		    		addSlashes(name) +
 		    		"', '" +
-		    		addslashes(alias) +
+		    		addSlashes(alias) +
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -624,10 +637,10 @@ public class Db_utils {
 		    		Db_table_names.T_GROUPING +
 		    		" SET " +
 		    		"`name`='" +
-		    		name +
+		    		addSlashes(name) +
 		    		"', " +
 		    		" `alias`='" +
-		    		alias +
+		    		addSlashes(alias) +
 		    		"' WHERE" +
 		    		" id=" +
 		    		grouping_id ;
@@ -754,16 +767,16 @@ public class Db_utils {
 		    		Db_table_names.T_PLUGIN +
 		    		" SET " +
 		    		" `name`='" +
-		    		name +
+		    		addSlashes(name) +
 		    		"'," +
 		    		" `type`='" +
-		    		type +
+		    		addSlashes(type) +
 		    		"'," +
 		    		" `configurationfile`='" +
-		    		configurationfile +
+		    		addSlashes(configurationfile) +
 		    		"'," +
 		    		" `note`='" +
-		    		note +
+		    		addSlashes(note) +
 		    		"' " +
 		    		" WHERE" +
 		    		" id=" +
@@ -792,13 +805,13 @@ public class Db_utils {
 		    		" (`name`, `type`, `configurationfile`, `note`)" +
 		    		" VALUES " +
 		    		" ('" +
-		    		addslashes(name) +
+		    		addSlashes(name) +
 		    		"', '" +
-		    		type +
+		    		addSlashes(type) +
 		    		"', '" +
-		    		addslashes(configurationfile) +
+		    		addSlashes(configurationfile) +
 		    		"', '" +
-		    		addslashes(note) +
+		    		addSlashes(note) +
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -912,22 +925,24 @@ public class Db_utils {
 		}
 
 		public void insertSimpleResultSet(String tableName ) throws  CustomException  {
-			String name = tableName;
-			String alias = tableName;
-			String statement = "SELECT * FROM " + tableName;
+			String name = addSlashes(tableName);
+			String alias = addSlashes(tableName);
+			String statement = "SELECT * FROM " + addSlashes(tableName);
 			insertResultSet (name, alias, statement );
 		}		
 
 		public void insertResultSet(String resultset_name, String resultset_alias, String resultset_statement ) throws  CustomException  {
 	           /* Esegui query per prendere i campi dal resultset */
-			 ArrayList<ResourceField> resourcesArray = get_fields_from_query(resultset_statement);
+			 ArrayList<ResourceField> resourcesArray = get_fields_from_query(addSlashes(resultset_statement));
 //		           resource_fields = get_fields_from_query(resultset_name);
 		
 		           /* Inserisci il resultset in resources e prendine l'id */
-			 int resultset_id = insert_resource(resultset_name, resultset_alias);
+			 int resultset_id = insert_resource(addSlashes(resultset_name), addSlashes(resultset_alias));
 		
-			 Resultset resultset = new Resultset( resultset_id, resultset_name,
-			  resultset_alias, resultset_statement);
+			 Resultset resultset = new Resultset( resultset_id, 
+					 							addSlashes(resultset_name),
+					 							addSlashes(resultset_alias), 
+					 							addSlashes(resultset_statement)	);
 		
 	           /* Salva il resultset nella tabella resultset */
 			 insert_resultset(resultset);
@@ -973,9 +988,9 @@ public class Db_utils {
 		        "1, " +
 		        resultset_id +
 		        ", '" +
-		        addslashes(type) +
+		        addSlashes(type) +
 		        "', '" +
-		        addslashes(def) +
+		        addSlashes(def) +
 		        "')";
 			    try {
 		    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -1030,7 +1045,7 @@ public class Db_utils {
 		    		" ('" +
 		    		id +
 		    		"', '" +
-		    		addslashes(statement) +
+		    		addSlashes(statement) +
 		    		"')";
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -1093,9 +1108,9 @@ public class Db_utils {
 		    		" (`name`, `alias`) " +
 		    		" VALUES " +
 		    		" ('" +
-		    		addslashes(name) +
+		    		addSlashes(name) +
 		    		"', '" +
-		    		addslashes(alias) +
+		    		addSlashes(alias) +
 		    		"')";	
 		    try {
 	    		PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -1345,7 +1360,7 @@ public class Db_utils {
 		        String  defaultvalue = rs.getString("defaultvalue");
 		        int default_header = rs.getInt("default_header");		        
 		        int search_grouping = rs.getInt("search_grouping");		        
-		        int id_grouping = rs.getInt("id_grouping");		        
+		        //int id_grouping = rs.getInt("id_grouping");		        
 		        ResourceGroupPermissions resourceGroupPermissions = getResourceGroupPermissions(id, group_id);		        
 		        ResourceWithGroupPermissions newResourceWithGroupPermissions =  new ResourceWithGroupPermissions
 		        (id, name, alias,type, defaultvalue ,default_header, search_grouping, search_grouping,  resourceGroupPermissions); 
@@ -1401,7 +1416,7 @@ public class Db_utils {
 		    Connection connection = db_get_connection();
 		    try {
 			    ArrayList<ResourceField> results = new ArrayList<ResourceField>();
-	    		PreparedStatement pstmt = connection.prepareStatement(query  +  " LIMIT 0,1");	    		
+	    		PreparedStatement pstmt = connection.prepareStatement(addSlashes( query)  +  " LIMIT 0,1");	    		
 			    ResultSet rs = pstmt.executeQuery();
 		        ResultSetMetaData metaData = rs.getMetaData();
 		        int rowCount = metaData.getColumnCount();
@@ -1504,14 +1519,15 @@ public class Db_utils {
 //		}
 
 		
-		public void modifyResourceAlias(int id, String newAlias) throws  CustomException  {
+		public void modifyResourceAlias(int id, 
+										String newAlias) throws  CustomException  {
 		    Connection connection = db_get_connection();
 		    String query = "" +
 		    		" UPDATE " +
 		    		Db_table_names.T_RESOURCE +
 		    		" SET " +
 		    		" `alias` = '" +
-		    		newAlias +
+		    		addSlashes(newAlias) +
 		    		"' " +
 		    		" WHERE " +
 		    		" id=" +
@@ -1575,7 +1591,7 @@ public class Db_utils {
 		        int id = rs.getInt("id");
 		        String name = rs.getString("name");
 		        String alias = rs.getString("alias");
-		        int type = rs.getInt("type");
+		       // int type = rs.getInt("type");
 		        ResourceMinimal newResource =  new ResourceMinimal(id, name, alias); 
 			    pstmt.close();		
 		        return newResource;
@@ -1796,49 +1812,46 @@ public class Db_utils {
 		}		
 	
 		
-		
-		private String addslashes(String s1){
-			/*
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * NON IMPLEMENTATA !!!!!!
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 */
-			String s2 = s1 ;
-			return s2;
+		public String addSlashes (String str) {
+			StringBuffer s1 = new StringBuffer ((String) str);
+			int newMaxLength = s1.length() * 2;
+			StringBuffer s2 = new StringBuffer (newMaxLength);
+			try {				
+				if(str==null) {
+					return "";
+				}
+				for (int i = 0; i < s1.length(); i++){
+					if ( (s1.charAt (i) == '\'') || 
+						 (s1.charAt (i) == '\"')  || 
+						 (s1.charAt (i) == '\\') ) { 
+						s2.append('\\');
+					}
+					s2.append (s1.charAt (i));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("errore su: "  + s1 + " --> " + s2);
+			}
+
+			return s2.toString();				
 		}
+		
+//		public String addslashes(String s1){
+//			/*
+//			 * 
+//			 * NON IMPLEMENTATA !!!!!!
+//			 * 
+//			 */
+//			String s2 = "";
+//			if (s1== null) {
+//				return s2;
+//			}
+//			s2 = s1.replaceAll("\'", "\\" + "\'");
+//			//s2 = s1.replaceAll("\\", "" + '\\' + '\\');
+//			s2 = s1.replaceAll("\"", "\\" +  "\"");
+//			return s2;
+//		}
 
 		
 		
