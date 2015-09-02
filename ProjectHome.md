@@ -1,0 +1,1 @@
+JARDiN Administrator is a GWT application for JARDiN administration and configuration
